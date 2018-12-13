@@ -1,12 +1,15 @@
 package com.xuecheng.framework.domain.cms.request;
 
 import com.xuecheng.framework.model.request.RequestData;
+import lombok.Data;
 
 /**
  * Date:2018/12/8
  * Author:gyc
  * Desc:
  */
+
+@Data
 public class QueryPageRequest extends RequestData{
 
 
