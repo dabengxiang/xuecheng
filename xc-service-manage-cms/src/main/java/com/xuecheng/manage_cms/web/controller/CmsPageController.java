@@ -15,6 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Date:2018/12/8
  * Author:gyc
@@ -51,6 +54,12 @@ public class CmsPageController extends BaseController implements CmsPageControll
             logger.error(this.getClass().toString(),e);
             return ResponseResult.FAIL();
         }
+    }
+
+    @Override
+    @GetMapping("/siteList")
+    public List<Map<String, Object>> siteList() {
+        return cmsPageService.siteList();
     }
 
 

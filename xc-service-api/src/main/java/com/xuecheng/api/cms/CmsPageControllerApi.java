@@ -10,6 +10,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * project name : xuecheng
  * Date:2018/12/13
@@ -24,4 +27,10 @@ public interface CmsPageControllerApi {
 
 
     public ResponseResult add(CmsPage cmsPage);
+
+
+
+
+
+    public List<Map<String,Object>> siteList();
 }
