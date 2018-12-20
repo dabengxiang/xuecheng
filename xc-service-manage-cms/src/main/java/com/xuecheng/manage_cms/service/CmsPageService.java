@@ -2,10 +2,13 @@ package com.xuecheng.manage_cms.service;
 
 import com.xuecheng.framework.domain.cms.CmsPage;
 import com.xuecheng.framework.domain.cms.CmsSite;
+import com.xuecheng.framework.domain.cms.CmsTemplate;
 import com.xuecheng.framework.domain.cms.request.QueryPageRequest;
 import com.xuecheng.framework.model.response.*;
 import com.xuecheng.manage_cms.dao.CmsPageDao;
 import com.xuecheng.manage_cms.dao.CmsSiteDao;
+import com.xuecheng.manage_cms.dao.CmsTemplateDao;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -35,6 +38,9 @@ public class CmsPageService {
 
     @Autowired
     private CmsSiteDao cmsSiteDao;
+    
+    @Autowired
+    private CmsTemplateDao cmsTemplateDao;
 
     public Page<CmsPage> findList(int page, int size, QueryPageRequest queryPageRequest){
 
@@ -47,9 +53,19 @@ public class CmsPageService {
 
         CmsPage cmsPageTemplage = new CmsPage();
 
-        cmsPageTemplage.setSiteId(queryPageRequest.getSiteId());
-        cmsPageTemplage.setPageId(queryPageRequest.getPageId());
-        cmsPageTemplage.setPageAliase(queryPageRequest.getPageAliase());
+        if(StringUtils.isNotBlank(queryPageRequest.getSiteId())){
+            cmsPageTemplage.setSiteId(queryPageRequest.getSiteId());
+
+        }
+        if(StringUtils.isNotBlank(queryPageRequest.getPageId())) {
+            cmsPageTemplage.setPageId(queryPageRequest.getPageId());
+        }
+
+        if(StringUtils.isNotBlank(queryPageRequest.getPageAliase())) {
+            cmsPageTemplage.setPageAliase(queryPageRequest.getPageAliase());
+
+        }
+
 
 
         ExampleMatcher exampleMatcher = ExampleMatcher.matching().withMatcher("pageAliase",
@@ -88,6 +104,35 @@ public class CmsPageService {
             });
         }
         return list;
+    }
+
+    public List<Map<String,Object>> templateList(String siteId) {
+
+        List<CmsTemplate> all = null;
+        
+        if(StringUtils.isNotBlank(siteId)){
+            CmsTemplate cmsTemplate = new CmsTemplate();
+            cmsTemplate.setSiteId(siteId);
+             all = cmsTemplateDao.findAll(Example.of(cmsTemplate));
+        }else{
+             all = cmsTemplateDao.findAll();
+        }
+        
+        
+        List<Map<String,Object>>  list = new ArrayList<>(0);
+        if(all!=null){
+            all.forEach(new Consumer<CmsTemplate>() {
+                @Override
+                public void accept(CmsTemplate cmsTemplate) {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("templateId",cmsTemplate.getTemplateId());
+                    map.put("templateName",cmsTemplate.getTemplateName());
+                    list.add(map);
+                }
+            });
+        }
+        return list;
+        
     }
 }
 

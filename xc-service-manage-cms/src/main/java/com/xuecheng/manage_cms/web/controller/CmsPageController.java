@@ -38,7 +38,6 @@ public class CmsPageController extends BaseController implements CmsPageControll
     public QueryResponseResult findList(@PathVariable("page") int page, @PathVariable("size") int size , QueryPageRequest queryPageRequest){
 
         Page<CmsPage> list = cmsPageService.findList(page, size, queryPageRequest);
-
         return new QueryResponseResult(CommonCode.SUCCESS,new QueryResult<CmsPage>(list.getContent(),list.getTotalElements()));
 
     }
@@ -46,7 +45,6 @@ public class CmsPageController extends BaseController implements CmsPageControll
     @Override
     @PostMapping("/add")
     public ResponseResult add(@RequestBody  CmsPage cmsPage) {
-
         try {
             cmsPageService.add(cmsPage);
             return ResponseResult.SUCCESS();
@@ -63,4 +61,10 @@ public class CmsPageController extends BaseController implements CmsPageControll
     }
 
 
+
+    @Override
+    @GetMapping("/templateList")
+    public List<Map<String, Object>> templateList(@RequestParam(value = "siteId",required = true) String siteId) {
+        return cmsPageService.templateList(siteId);
+    }
 }
