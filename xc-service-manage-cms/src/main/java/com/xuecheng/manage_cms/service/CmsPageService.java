@@ -17,10 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 
@@ -133,6 +130,24 @@ public class CmsPageService {
         }
         return list;
         
+    }
+
+    public CmsPage findById(String id) {
+        return cmsPageDao.findById(id).get();
+    }
+
+    public void edit(CmsPage cmsPage) {
+        Optional<CmsPage> byId = cmsPageDao.findById(cmsPage.getPageId());
+        if(byId.isPresent()){
+            cmsPageDao.save(cmsPage);
+
+        }else{
+            throw  new RuntimeException("修改失败，不存在此id");
+        }
+    }
+
+    public void delete(String id) {
+        cmsPageDao.deleteById(id);
     }
 }
 

@@ -10,12 +10,21 @@ import lombok.ToString;
  */
 @Data
 @ToString
-public class CommonResponseResult<T>  extends ResponseResult{
+public class CommonResponseResult  extends ResponseResult{
 
-    T data;
+    Object data;
 
-    public CommonResponseResult(ResultCode resultCode,T data){
+    public CommonResponseResult(ResultCode resultCode,Object data){
         super(resultCode);
         this.data = data;
     }
+
+    public static CommonResponseResult SUCCESS(Object data){
+        return new CommonResponseResult(CommonCode.SUCCESS,data);
+    }
+
+    public static CommonResponseResult FAIL(Object data){
+        return new CommonResponseResult(CommonCode.FAIL,data);
+    }
+
 }

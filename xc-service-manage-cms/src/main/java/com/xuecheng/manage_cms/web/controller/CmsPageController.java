@@ -3,10 +3,8 @@ package com.xuecheng.manage_cms.web.controller;
 import com.xuecheng.api.cms.CmsPageControllerApi;
 import com.xuecheng.framework.domain.cms.CmsPage;
 import com.xuecheng.framework.domain.cms.request.QueryPageRequest;
-import com.xuecheng.framework.model.response.CommonCode;
-import com.xuecheng.framework.model.response.QueryResponseResult;
-import com.xuecheng.framework.model.response.QueryResult;
-import com.xuecheng.framework.model.response.ResponseResult;
+import com.xuecheng.framework.exception.CustomerException;
+import com.xuecheng.framework.model.response.*;
 import com.xuecheng.framework.web.BaseController;
 import com.xuecheng.manage_cms.service.CmsPageService;
 import org.slf4j.Logger;
@@ -66,5 +64,53 @@ public class CmsPageController extends BaseController implements CmsPageControll
     @GetMapping("/templateList")
     public List<Map<String, Object>> templateList(@RequestParam(value = "siteId",required = true) String siteId) {
         return cmsPageService.templateList(siteId);
+    }
+
+
+
+    @GetMapping("/find/{id}")
+    public CommonResponseResult findById(@PathVariable("id")String id){
+
+        try{
+            CmsPage byId = cmsPageService.findById(id);
+            return CommonResponseResult.SUCCESS(byId);
+        }catch (Exception e){
+            return exceptionHandle(e,"获取失败");
+        }
+}
+
+
+    @PostMapping("/edit")
+    public CommonResponseResult findById(@RequestBody  CmsPage cmsPage){
+        try{
+            cmsPageService.edit(cmsPage);
+            return CommonResponseResult.SUCCESS("修改成功");
+        }catch (Exception e){
+            return exceptionHandle(e,"修改失败");
+        }
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseResult delete(@PathVariable("id") String id ){
+        try{
+            cmsPageService.delete(id);
+            return ResponseResult.SUCCESS();
+        }catch (Exception e){
+            return exceptionHandle(e,"删除失败");
+        }
+
+    }
+
+
+    public CommonResponseResult  exceptionHandle(Exception e, String message){
+        logger.error(this.getClass().toString(),e);
+        if(e instanceof CustomerException){
+            return CommonResponseResult.FAIL(e.getMessage());
+        }else{
+            return CommonResponseResult.FAIL(message);
+
+        }
+
+
     }
 }
