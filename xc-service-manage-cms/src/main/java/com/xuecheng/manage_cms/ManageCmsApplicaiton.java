@@ -14,6 +14,7 @@ import org.springframework.context.annotation.ComponentScan;
 @EntityScan(basePackages = "com.xuecheng.framework.domain")
 @ComponentScan(basePackages = "com.xuecheng.manage_cms")
 @ComponentScan(basePackages = "com.xuecheng.api")
+@ComponentScan(basePackages = "com.xuecheng.framework.exception")
 public class ManageCmsApplicaiton {
 
     public static void main(String[] args) {

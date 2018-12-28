@@ -4,6 +4,8 @@ import com.xuecheng.framework.domain.cms.CmsPage;
 import com.xuecheng.framework.domain.cms.CmsSite;
 import com.xuecheng.framework.domain.cms.CmsTemplate;
 import com.xuecheng.framework.domain.cms.request.QueryPageRequest;
+import com.xuecheng.framework.domain.cms.response.CmsCode;
+import com.xuecheng.framework.exception.ExceptionCast;
 import com.xuecheng.framework.model.response.*;
 import com.xuecheng.manage_cms.dao.CmsPageDao;
 import com.xuecheng.manage_cms.dao.CmsSiteDao;
@@ -140,9 +142,8 @@ public class CmsPageService {
         Optional<CmsPage> byId = cmsPageDao.findById(cmsPage.getPageId());
         if(byId.isPresent()){
             cmsPageDao.save(cmsPage);
-
         }else{
-            throw  new RuntimeException("修改失败，不存在此id");
+             ExceptionCast.cast(CmsCode.CMS_ADDPAGE_NOTXISTS);
         }
     }
 

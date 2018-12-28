@@ -81,13 +81,9 @@ public class CmsPageController extends BaseController implements CmsPageControll
 
 
     @PostMapping("/edit")
-    public CommonResponseResult findById(@RequestBody  CmsPage cmsPage){
-        try{
+    public ResponseResult findById(@RequestBody  CmsPage cmsPage){
             cmsPageService.edit(cmsPage);
-            return CommonResponseResult.SUCCESS("修改成功");
-        }catch (Exception e){
-            return exceptionHandle(e,"修改失败");
-        }
+            return ResponseResult.SUCCESS();
     }
 
     @DeleteMapping("/delete/{id}")
