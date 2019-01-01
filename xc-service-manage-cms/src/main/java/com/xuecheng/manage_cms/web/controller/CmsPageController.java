@@ -1,6 +1,7 @@
 package com.xuecheng.manage_cms.web.controller;
 
 import com.xuecheng.api.cms.CmsPageControllerApi;
+import com.xuecheng.framework.domain.cms.CmsConfig;
 import com.xuecheng.framework.domain.cms.CmsPage;
 import com.xuecheng.framework.domain.cms.request.QueryPageRequest;
 import com.xuecheng.framework.exception.CustomerException;
@@ -25,7 +26,7 @@ import java.util.Map;
 @RestController
 public class CmsPageController extends BaseController implements CmsPageControllerApi {
 
-    
+
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
@@ -33,21 +34,21 @@ public class CmsPageController extends BaseController implements CmsPageControll
     private CmsPageService cmsPageService;
 
     @GetMapping("/list/{page}/{size}")
-    public QueryResponseResult findList(@PathVariable("page") int page, @PathVariable("size") int size , QueryPageRequest queryPageRequest){
+    public QueryResponseResult findList(@PathVariable("page") int page, @PathVariable("size") int size, QueryPageRequest queryPageRequest) {
 
         Page<CmsPage> list = cmsPageService.findList(page, size, queryPageRequest);
-        return new QueryResponseResult(CommonCode.SUCCESS,new QueryResult<CmsPage>(list.getContent(),list.getTotalElements()));
+        return new QueryResponseResult(CommonCode.SUCCESS, new QueryResult<CmsPage>(list.getContent(), list.getTotalElements()));
 
     }
 
     @Override
     @PostMapping("/add")
-    public ResponseResult add(@RequestBody  CmsPage cmsPage) {
+    public ResponseResult add(@RequestBody CmsPage cmsPage) {
         try {
             cmsPageService.add(cmsPage);
             return ResponseResult.SUCCESS();
-        }catch (Exception e){
-            logger.error(this.getClass().toString(),e);
+        } catch (Exception e) {
+            logger.error(this.getClass().toString(), e);
             return ResponseResult.FAIL();
         }
     }
@@ -59,54 +60,55 @@ public class CmsPageController extends BaseController implements CmsPageControll
     }
 
 
-
     @Override
     @GetMapping("/templateList")
-    public List<Map<String, Object>> templateList(@RequestParam(value = "siteId",required = true) String siteId) {
+    public List<Map<String, Object>> templateList(@RequestParam(value = "siteId", required = true) String siteId) {
         return cmsPageService.templateList(siteId);
     }
 
 
-
     @GetMapping("/find/{id}")
-    public CommonResponseResult findById(@PathVariable("id")String id){
+    public CommonResponseResult findById(@PathVariable("id") String id) {
 
-        try{
+        try {
             CmsPage byId = cmsPageService.findById(id);
             return CommonResponseResult.SUCCESS(byId);
-        }catch (Exception e){
-            return exceptionHandle(e,"获取失败");
+        } catch (Exception e) {
+            return exceptionHandle(e, "获取失败");
         }
-}
+    }
 
 
     @PostMapping("/edit")
-    public ResponseResult findById(@RequestBody  CmsPage cmsPage){
-            cmsPageService.edit(cmsPage);
-            return ResponseResult.SUCCESS();
+    public ResponseResult findById(@RequestBody CmsPage cmsPage) {
+        cmsPageService.edit(cmsPage);
+        return ResponseResult.SUCCESS();
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseResult delete(@PathVariable("id") String id ){
-        try{
+    public ResponseResult delete(@PathVariable("id") String id) {
+        try {
             cmsPageService.delete(id);
             return ResponseResult.SUCCESS();
-        }catch (Exception e){
-            return exceptionHandle(e,"删除失败");
+        } catch (Exception e) {
+            return exceptionHandle(e, "删除失败");
         }
 
     }
 
 
-    public CommonResponseResult  exceptionHandle(Exception e, String message){
-        logger.error(this.getClass().toString(),e);
-        if(e instanceof CustomerException){
+    public CommonResponseResult exceptionHandle(Exception e, String message) {
+        logger.error(this.getClass().toString(), e);
+        if (e instanceof CustomerException) {
             return CommonResponseResult.FAIL(e.getMessage());
-        }else{
+        } else {
             return CommonResponseResult.FAIL(message);
 
         }
-
-
     }
+
+
+
+
+
 }
