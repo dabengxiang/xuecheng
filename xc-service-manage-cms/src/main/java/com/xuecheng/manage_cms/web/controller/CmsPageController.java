@@ -66,6 +66,7 @@ public class CmsPageController extends BaseController implements CmsPageControll
         return cmsPageService.templateList(siteId);
     }
 
+ 
 
     @GetMapping("/find/{id}")
     public CommonResponseResult findById(@PathVariable("id") String id) {
@@ -95,6 +96,19 @@ public class CmsPageController extends BaseController implements CmsPageControll
         }
 
     }
+
+    @PostMapping("/post/page/{pageId}")
+    @Override
+    public ResponseResult postPage(@PathVariable("pageId") String pageId) throws Exception {
+        
+        return cmsPageService.postPage(pageId);
+
+
+
+    }
+
+
+
 
 
     public CommonResponseResult exceptionHandle(Exception e, String message) {

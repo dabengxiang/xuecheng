@@ -1,5 +1,6 @@
 package com.xuecheng.manage_cms.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSDownloadStream;
@@ -12,6 +13,7 @@ import com.xuecheng.framework.domain.cms.request.QueryPageRequest;
 import com.xuecheng.framework.domain.cms.response.CmsCode;
 import com.xuecheng.framework.exception.ExceptionCast;
 import com.xuecheng.framework.model.response.*;
+import com.xuecheng.manage_cms.config.RabbitMqConfig;
 import com.xuecheng.manage_cms.dao.CmsConfigDao;
 import com.xuecheng.manage_cms.dao.CmsPageDao;
 import com.xuecheng.manage_cms.dao.CmsSiteDao;
@@ -23,6 +25,10 @@ import freemarker.template.TemplateException;
 import net.bytebuddy.asm.Advice;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -53,6 +59,10 @@ import java.util.function.Consumer;
 @Transactional(rollbackFor = RuntimeException.class)
 public class CmsPageService {
 
+    
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+    
     @Autowired
     private CmsPageDao cmsPageDao;
 
@@ -297,6 +307,61 @@ public class CmsPageService {
     public Map<String,Object> getModelDataByDataUrl(String dataUrl){
         Map<String,Object> map = restTemplate.getForObject(dataUrl, Map.class);
         return map;
+    }
+
+    /**
+     * 保存文件
+     * @param pageId
+     * @param pageHtml
+     * @throws IOException
+     */
+    public CmsPage saveFile(String pageId,String pageHtml) throws IOException {
+
+        Optional<CmsPage> cmsPageOpt = cmsPageDao.findById(pageId);
+        if(!cmsPageOpt.isPresent()){
+            ExceptionCast.cast(CmsCode.CMS_ADDPAGE_NOTXISTS);
+        }
+        CmsPage cmsPage = cmsPageOpt.get();
+
+        InputStream inputStream = IOUtils.toInputStream(pageHtml, "utf-8");
+        ObjectId store = gridFsTemplate.store(inputStream, "utf-8");
+
+        cmsPage.setHtmlFileId(store.toString());
+        cmsPageDao.save(cmsPage);
+        
+        return cmsPage;
+        
+    }
+
+    /**
+     * 发布页面
+     * @param pageId
+     * @return
+     */
+    public ResponseResult postPage(String pageId) throws Exception {
+        String pageHtml = getPageHtml(pageId);
+        CmsPage cmsPage = saveFile(pageId, pageHtml);
+        sendPostPage(cmsPage);
+        return ResponseResult.SUCCESS();
+    }
+
+
+    /**
+     * 往mq中发信息
+    * @param cmsPage
+     */
+    public void sendPostPage(CmsPage cmsPage) throws JsonProcessingException {
+        
+        String siteId = cmsPage.getSiteId();
+        Map<String, Object> map = new HashMap<>();
+        map.put("pageId",cmsPage.getPageId());
+        byte[] bytes = objectMapper.writeValueAsBytes(map);
+
+        MessageProperties messageProperties = new MessageProperties();
+        messageProperties.setContentType("application/json");
+        Message message = new Message(bytes, messageProperties);
+
+        rabbitTemplate.send(RabbitMqConfig.EX_ROUTING_CMS_POSTPAGE,siteId,message);
     }
 }
 

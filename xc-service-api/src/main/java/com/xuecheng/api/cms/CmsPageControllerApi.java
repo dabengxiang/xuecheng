@@ -38,4 +38,7 @@ public interface CmsPageControllerApi {
 
     public List<Map<String, Object>> templateList(@RequestParam("siteId") String siteID) ;
 
+
+    public ResponseResult postPage(String pageId) throws Exception;
+
 }
