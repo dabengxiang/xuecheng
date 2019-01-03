@@ -41,15 +41,15 @@ public class ConsumerPostPage {
 //    }
 
 
-//    @RabbitListener(queues = {"${xuecheng.mq.queue}"})
-//    @RabbitHandler
-//    public void onOrderMessage(@Payload Map<String,Object> map,
-//                               Channel channel,
-//                               @Headers Map<String, Object> headers) throws Exception {
-//
-//        String pageId = (String) map.get("pageId");
-//        pageService.savePageToServerPath(pageId);
-//    }
+    @RabbitListener(queues = {"${xuecheng.mq.queue}"})
+    @RabbitHandler
+    public void onOrderMessage(@Payload Map<String,Object> map,
+                               Channel channel,
+                               @Headers Map<String, Object> headers) throws Exception {
+
+        String pageId = (String) map.get("pageId");
+        pageService.savePageToServerPath(pageId);
+    }
 
 
     

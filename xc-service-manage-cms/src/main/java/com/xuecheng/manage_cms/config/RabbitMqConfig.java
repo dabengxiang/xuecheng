@@ -1,6 +1,8 @@
 package com.xuecheng.manage_cms.config;
 
 import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.support.CorrelationData;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -24,5 +26,13 @@ public class RabbitMqConfig {
     
     
   
+//    RabbitTemplate.ConfirmCallback confirmCallback = new RabbitTemplate.ConfirmCallback() {
+//        @Override
+//        public void confirm(CorrelationData correlationData, boolean b, String s) {
+//            return null;
+//        }
+//    }
+    
+    
 
 }

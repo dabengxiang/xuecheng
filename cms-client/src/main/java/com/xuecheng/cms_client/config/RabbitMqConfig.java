@@ -59,38 +59,38 @@ public class RabbitMqConfig {
 
 
 
-    @Bean
-    public SimpleMessageListenerContainer messageContainer(ConnectionFactory connectionFactory) {
-
-        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(connectionFactory);
-        container.setQueues(queue());
-        container.setConcurrentConsumers(1);
-        container.setMaxConcurrentConsumers(5);
-        container.setDefaultRequeueRejected(false);
-        container.setAcknowledgeMode(AcknowledgeMode.AUTO);
-        container.setExposeListenerChannel(true);
-        container.setConsumerTagStrategy(new ConsumerTagStrategy() {
-            @Override
-            public String createConsumerTag(String queue) {
-                return queue + "_" + UUID.randomUUID().toString();
-            }
-        });
-
-//        MessageListenerAdapter adapter = new MessageListenerAdapter(new MessageDelegate());
+//    @Bean
+//    public SimpleMessageListenerContainer messageContainer(ConnectionFactory connectionFactory) {
+//
+//        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(connectionFactory);
+//        container.setQueues(queue());
+//        container.setConcurrentConsumers(1);
+//        container.setMaxConcurrentConsumers(5);
+//        container.setDefaultRequeueRejected(false);
+//        container.setAcknowledgeMode(AcknowledgeMode.AUTO);
+//        container.setExposeListenerChannel(true);
+//        container.setConsumerTagStrategy(new ConsumerTagStrategy() {
+//            @Override
+//            public String createConsumerTag(String queue) {
+//                return queue + "_" + UUID.randomUUID().toString();
+//            }
+//        });
+//
+////        MessageListenerAdapter adapter = new MessageListenerAdapter(new MessageDelegate());
+////        adapter.setDefaultListenerMethod("consumeMessage");
+////        adapter.setMessageConverter(new TextMessageConverter());
+////        container.setMessageListener(adapter);
+//        MessageListenerAdapter adapter = new MessageListenerAdapter(messageDelegate);
 //        adapter.setDefaultListenerMethod("consumeMessage");
-//        adapter.setMessageConverter(new TextMessageConverter());
+//
+//        Jackson2JsonMessageConverter jackson2JsonMessageConverter = new Jackson2JsonMessageConverter();
+//        adapter.setMessageConverter(jackson2JsonMessageConverter);
+//
 //        container.setMessageListener(adapter);
-        MessageListenerAdapter adapter = new MessageListenerAdapter(messageDelegate);
-        adapter.setDefaultListenerMethod("consumeMessage");
-
-        Jackson2JsonMessageConverter jackson2JsonMessageConverter = new Jackson2JsonMessageConverter();
-        adapter.setMessageConverter(jackson2JsonMessageConverter);
-
-        container.setMessageListener(adapter);
-    
-    
-        return container;
-
-    }
+//    
+//    
+//        return container;
+//
+//    }
 
 }

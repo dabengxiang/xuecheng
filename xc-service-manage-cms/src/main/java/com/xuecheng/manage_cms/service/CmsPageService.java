@@ -11,30 +11,30 @@ import com.xuecheng.framework.domain.cms.CmsSite;
 import com.xuecheng.framework.domain.cms.CmsTemplate;
 import com.xuecheng.framework.domain.cms.request.QueryPageRequest;
 import com.xuecheng.framework.domain.cms.response.CmsCode;
+import com.xuecheng.framework.domain.message.BrokerMessageContant;
+import com.xuecheng.framework.domain.message.BrokerMessageLog;
 import com.xuecheng.framework.exception.ExceptionCast;
-import com.xuecheng.framework.model.response.*;
+import com.xuecheng.framework.model.response.ResponseResult;
 import com.xuecheng.manage_cms.config.RabbitMqConfig;
 import com.xuecheng.manage_cms.dao.CmsConfigDao;
 import com.xuecheng.manage_cms.dao.CmsPageDao;
 import com.xuecheng.manage_cms.dao.CmsSiteDao;
 import com.xuecheng.manage_cms.dao.CmsTemplateDao;
+import com.xuecheng.manage_cms.utils.FastJsonConvertUtil;
 import freemarker.cache.StringTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import net.bytebuddy.asm.Advice;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.bson.types.ObjectId;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
@@ -355,13 +355,35 @@ public class CmsPageService {
         String siteId = cmsPage.getSiteId();
         Map<String, Object> map = new HashMap<>();
         map.put("pageId",cmsPage.getPageId());
-        byte[] bytes = objectMapper.writeValueAsBytes(map);
+//        byte[] bytes = objectMapper.writeValueAsBytes(map);
+//
+//        MessageProperties messageProperties = new MessageProperties();
+//        messageProperties.setContentType("application/json");
+//        Message message = new Message(bytes, messageProperties);
+//        CorrelationData correlationData = new CorrelationData();
+//
+//        correlationData.setId();
 
-        MessageProperties messageProperties = new MessageProperties();
-        messageProperties.setContentType("application/json");
-        Message message = new Message(bytes, messageProperties);
+        BrokerMessageLog brokerMessageLog = new BrokerMessageLog();
 
-        rabbitTemplate.send(RabbitMqConfig.EX_ROUTING_CMS_POSTPAGE,siteId,message);
+
+        rabbitTemplate.convertAndSend(RabbitMqConfig.EX_ROUTING_CMS_POSTPAGE,siteId,map);
     }
+
+
+    /**
+     * 插入一个默认的brokerMessage
+     */
+//    public void insertDefaultBorkerMessage(CmsPage cmsPage){
+//        BrokerMessageLog brokerMessageLog = new BrokerMessageLog();
+//        brokerMessageLog.setMessage(FastJsonConvertUtil.convertObjectToJSON(order));
+//        brokerMessageLog.setCreateTime(new Date());
+//        brokerMessageLog.setUpdateTime(new Date());
+//        brokerMessageLog.setStatus(BrokerMessageContant.ORDER_SENDING);
+////        brokerMessageLog.setNextRetry(DateUtils.addMinutes(orderTime, BrokerMessageContant.ORDER_TIMEOUT));
+//        brokerMessageLog.setTryCount(0);
+//        
+//
+//    }
 }
 

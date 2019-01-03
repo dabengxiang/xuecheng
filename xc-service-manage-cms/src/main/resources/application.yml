@@ -13,3 +13,10 @@ spring:
     username: guest
     password: guest
     virtual-host: /
+    publisher-confirms: true
+    publisher-returns: true
+    connection-timeout: 15000
+    template:
+      mandatory: true
+
+    

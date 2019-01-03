@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xuecheng.manage_course.dao.TeachplanMapper">
+    <select id="findTeachplanList" parameterType="java.lang.String"
+            resultType="com.xuecheng.framework.domain.course.ext.TeachplanNode">
+        select * from course_base where id = #{id}
+    </select>
+    
+    
+    
+</mapper>
+
+        SELECT
+        one.id,
+        one.pname,
+        one.grade,
+        two.id,
+        two.pname,
+        two.grade,
+        three.id,
+        three.pname,
+        three.grade
+        FROM
+        teachplan one,
+        teachplan two,
+        teachplan three
+        WHERE
+        one.id = '1'
+        and one.id = two.parentid
+        and two.id = three.parentid
