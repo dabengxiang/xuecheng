@@ -14,13 +14,16 @@
         three.pname as three_pname,
         three.grade as three_grade
         FROM
-        teachplan one,
-        teachplan two,
-        teachplan three
+        teachplan one left JOIN  teachplan two on   one.id = two.parentid
+        left JOIN  teachplan three  on two.id = three.parentid
         WHERE
-        one.id = '1'
-        and one.id = two.parentid
-        and two.id = three.parentid
+        one.parentid = '0'
+        <if test="_parameter != null and _parameter != ''">
+            and one.courseId =  #{courseId}
+        </if>
+        order by one.orderby,
+        two.orderby,
+        three.orderby
     </select>
 
 
@@ -31,13 +34,13 @@
             <id column="two_id" property="id" javaType="String"></id>
             <result column="two_pname" property="pname" javaType="String"></result>
             <collection property="children" ofType="com.xuecheng.framework.domain.course.ext.TeachplanNode">
-                <id column="two_id" property="id" javaType="String"></id>
-                <result column="two_pname" property="pname" javaType="String"></result>
+                <id column="three_id" property="id" javaType="String"></id>
+                <result column="three_pname" property="pname" javaType="String"></result>
             </collection>
         </collection>
     </resultMap>
 
-    
+
     
 </mapper>
 

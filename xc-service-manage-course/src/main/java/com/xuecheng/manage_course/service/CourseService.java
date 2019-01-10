@@ -1,21 +1,25 @@
 package com.xuecheng.manage_course.service;
 
-import com.xuecheng.framework.domain.cms.response.CmsCode;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.xuecheng.framework.domain.course.CourseBase;
+import com.xuecheng.framework.domain.course.CourseMarket;
 import com.xuecheng.framework.domain.course.Teachplan;
+import com.xuecheng.framework.domain.course.ext.CourseInfo;
 import com.xuecheng.framework.domain.course.ext.TeachplanNode;
+import com.xuecheng.framework.domain.course.request.CourseListRequest;
 import com.xuecheng.framework.exception.ExceptionCast;
 import com.xuecheng.framework.model.response.CommonCode;
-import com.xuecheng.manage_course.dao.CourseMapper;
-import com.xuecheng.manage_course.dao.TeachplanMapper;
-import org.apache.commons.io.IOUtils;
+import com.xuecheng.framework.model.response.QueryResponseResult;
+import com.xuecheng.framework.model.response.QueryResult;
+import com.xuecheng.manage_course.dao.*;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Date:2019/1/6
@@ -32,6 +36,15 @@ public class CourseService {
 
     @Autowired
     private TeachplanMapper teachplanMapper;
+    
+    @Autowired
+    private TeachplanRepository teachplanRepository;
+    
+    @Autowired
+    private CourseBaseRepository courseBaseRepository;
+    
+    @Autowired
+    private CourseMarketRepository courseMarketRepository;
 
 
     public TeachplanNode findTeachplanList(String courseId) {
@@ -56,7 +69,7 @@ public class CourseService {
             parentTeachPlan = getTeachplanRoot(courseid);
             teachplan.setParentid(parentTeachPlan.getId());
         }else{
-            parentTeachPlan = teachplanMapper.selectByPrimaryKey(courseid);
+            parentTeachPlan = teachplanRepository.getOne(parentid);
         }
 
 
@@ -68,19 +81,16 @@ public class CourseService {
         }
         teachplan.setStatus("0");//未发布
 
-        teachplanMapper.insert(teachplan);
+        teachplanRepository.save(teachplan);
 
     }
 
 
     public Teachplan getTeachplanRoot(String courseId){
 
-        Teachplan teachplanExample = new Teachplan();
-        teachplanExample.setCourseid(courseId);
-        teachplanExample.setParentid("0");
-        List<Teachplan> teachplans = teachplanMapper.selectByExample(teachplanExample);
+        List<Teachplan> teachplans = teachplanRepository.findByCourseidAndParentid(courseId,"0");
         if(teachplans == null || teachplans.isEmpty()){
-            CourseBase courseBase = courseMapper.selectByPrimaryKey(courseId);
+            CourseBase courseBase = courseBaseRepository.getOne(courseId);
             Teachplan teachplan = new Teachplan();
             teachplan.setParentid("0");
             teachplan.setCourseid(courseId);
@@ -88,7 +98,7 @@ public class CourseService {
             teachplan.setGrade("1");
             teachplan.setPname(courseBase.getName());
             teachplan.setStatus("0");
-            teachplanMapper.insert(teachplan);
+            teachplanRepository.save(teachplan);
             return teachplan;
 
         }else{
@@ -99,5 +109,46 @@ public class CourseService {
 
 
 
+    }
+
+    public QueryResponseResult findCourseList(int page, int size, CourseListRequest courseListRequest) {
+//        courseListRequest.setCompanyId("1");
+        PageHelper.startPage(page,size);
+        Page<CourseInfo> courseListPage = courseMapper.findCourseListPage(courseListRequest);
+        return new QueryResponseResult(CommonCode.SUCCESS,
+                new QueryResult(courseListPage.getResult(),courseListPage.getTotal()));
+    }
+
+
+    /**
+     * 添加课程
+     * @param courseBase
+     */
+    public void addCourseBase(CourseBase courseBase) {
+        //todo: 不能写死的这里
+        courseBase.setCompanyId("1");
+        courseBaseRepository.save(courseBase); 
+     
+
+        
+    }
+
+    /**
+     * 查询课程
+     * @param courseId
+     */
+    public CourseBase getCourseBaseById(String courseId) {
+        
+       return  courseBaseRepository.findById(courseId).get();
+    }
+
+    public CourseMarket getCourseMarketById(String courseId) {
+        Optional<CourseMarket> optional = courseMarketRepository.findById(courseId);
+        return optional.isPresent() ? optional.get() : null;
+        
+    }
+
+    public void updateCourseMarket(CourseMarket courseMarket) {
+        courseMarketRepository.save(courseMarket);
     }
 }
