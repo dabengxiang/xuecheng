@@ -36,7 +36,7 @@ public class TestFastDFS {
             StorageClient1 storageClient1 = new StorageClient1(trackerServer,storeStorage);
             //向stroage服务器上传文件
             //本地文件的路径
-            String filePath = "E:\\html图片\\2.jpg";
+            String filePath = "E:\\图片视频资源\\1.jpg";
             //上传成功后拿到文件Id
             String fileId = storageClient1.upload_file1(filePath, "jpg", null);
             System.out.println(fileId);
@@ -65,10 +65,10 @@ public class TestFastDFS {
             StorageClient1 storageClient1 = new StorageClient1(trackerServer,storeStorage);
             //下载文件
             //文件id
-            String fileId = "group1/M00/00/01/wKhlQVuhU3eADb4pAAAawU0ID2Q159.png";
+            String fileId = "group1/M00/00/00/wKgZhVxMX4OAZUNVAAlR85_YQCQ325.jpg";
             byte[] bytes = storageClient1.download_file1(fileId);
             //使用输出流保存文件
-            FileOutputStream fileOutputStream = new FileOutputStream(new File("c:/logo.png"));
+            FileOutputStream fileOutputStream = new FileOutputStream(new File("c:/1.jpg"));
             fileOutputStream.write(bytes);
         } catch (IOException e) {
             e.printStackTrace();
@@ -76,6 +76,19 @@ public class TestFastDFS {
             e.printStackTrace();
         }
     }
+
+
+    @Test
+    public void testQueryFile() throws IOException,MyException{
+        ClientGlobal.initByProperties("config/fastdfs-client.properties");
+        TrackerClient trackerClient = new TrackerClient();
+        TrackerServer trackerServer = trackerClient.getConnection();
+        StorageServer storageServer = null;
+        StorageClient storageClient = new StorageClient(trackerServer,storageServer);
+        FileInfo group1 = storageClient.get_file_info("group1", "M00/00/00/wKgZhVxMX4OAZUNVAAlR85_YQCQ325.jpg");
+        System.err.println(group1);
+    }
+
 
 
 

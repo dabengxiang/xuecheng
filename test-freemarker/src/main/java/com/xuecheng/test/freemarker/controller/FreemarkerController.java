@@ -1,9 +1,13 @@
 package com.xuecheng.test.freemarker.controller;
 
 import com.xuecheng.test.freemarker.model.Student;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +22,10 @@ import java.util.Map;
  */
 @Controller
 public class FreemarkerController {
+
+    @Autowired
+    private RestTemplate restTemplate;
+
 
     @RequestMapping(value = "/test1",method = RequestMethod.GET)
     public String freeMarker(Map<String,Object> map){
@@ -48,6 +56,15 @@ public class FreemarkerController {
 
         return "test1";
         
+    }
+
+
+    @RequestMapping("/course")
+    public String Course(Map<String,Object> map){
+        ResponseEntity<Map> forEntity = restTemplate.getForEntity("http://localhost:31200/course/courseview/297e7c7c62b888f00162b8a7dec20000", Map.class);
+        Map body = forEntity.getBody();
+        map.putAll(body);
+        return "course";
     }
     
 

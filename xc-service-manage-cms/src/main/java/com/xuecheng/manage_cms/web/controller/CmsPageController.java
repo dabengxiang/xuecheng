@@ -4,6 +4,7 @@ import com.xuecheng.api.cms.CmsPageControllerApi;
 import com.xuecheng.framework.domain.cms.CmsConfig;
 import com.xuecheng.framework.domain.cms.CmsPage;
 import com.xuecheng.framework.domain.cms.request.QueryPageRequest;
+import com.xuecheng.framework.domain.cms.response.CmsPageResult;
 import com.xuecheng.framework.exception.CustomerException;
 import com.xuecheng.framework.model.response.*;
 import com.xuecheng.framework.web.BaseController;
@@ -103,10 +104,28 @@ public class CmsPageController extends BaseController implements CmsPageControll
         
         return cmsPageService.postPage(pageId);
 
-
-
     }
 
+
+
+
+
+    @Override
+    @PostMapping("/save")
+    public CmsPageResult saveAndUpdate(@RequestBody CmsPage cmsPage) {
+        try {
+            return cmsPageService.saveAndUpdate(cmsPage);
+        } catch (Exception e) {
+            logger.error(this.getClass().toString(), e);
+            return new CmsPageResult(CommonCode.FAIL,null);
+        }
+    }
+
+    @Override
+    @PostMapping("/postPageQuick")
+    public CmsPostPageResult postPageQuick(@RequestBody CmsPage cmsPage) {
+        return cmsPageService.postPageQuick(cmsPage);
+    }
 
 
 

@@ -1,0 +1,22 @@
+server:
+  port: 22100
+spring:
+  application:
+    name: xc-serivce-base-filesystem
+  data:
+    mongodb:
+      database: xc_fs
+      uri: mongodb://root:123@127.0.0.1:27017
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 30MB
+      file-size-threshold: 0
+
+xuecheng:
+  fastdfs:
+    connect_timeout_in_seconds: 5
+    network_timeout_in_seconds: 30
+    charset: UTF-8
+    tracker_servers: 192.168.25.133:22122 #多个 trackerServer中间以逗号分隔

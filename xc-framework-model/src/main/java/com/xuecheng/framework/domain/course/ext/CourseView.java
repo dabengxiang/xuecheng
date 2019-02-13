@@ -1,0 +1,26 @@
+package com.xuecheng.framework.domain.course.ext;
+
+import com.xuecheng.framework.domain.course.CourseBase;
+import com.xuecheng.framework.domain.course.CourseMarket;
+import com.xuecheng.framework.domain.course.CoursePic;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+import java.io.Serializable;
+
+/**
+ * Date:2019/2/8
+ * Author:gyc
+ * Desc:
+ */
+@Data
+@NoArgsConstructor
+@ToString
+public class CourseView implements Serializable {
+    CourseBase courseBase; //基本课程
+    CourseMarket courseMarket; //课程营销
+    CoursePic coursePic; //课程图片
+    TeachplanNode teachplanNode;  //课程计划
+
+}

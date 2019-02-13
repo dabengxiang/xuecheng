@@ -11,9 +11,12 @@ import com.xuecheng.framework.domain.cms.CmsSite;
 import com.xuecheng.framework.domain.cms.CmsTemplate;
 import com.xuecheng.framework.domain.cms.request.QueryPageRequest;
 import com.xuecheng.framework.domain.cms.response.CmsCode;
+import com.xuecheng.framework.domain.cms.response.CmsPageResult;
 import com.xuecheng.framework.domain.message.BrokerMessageContant;
 import com.xuecheng.framework.domain.message.BrokerMessageLog;
 import com.xuecheng.framework.exception.ExceptionCast;
+import com.xuecheng.framework.model.response.CmsPostPageResult;
+import com.xuecheng.framework.model.response.CommonCode;
 import com.xuecheng.framework.model.response.ResponseResult;
 import com.xuecheng.manage_cms.config.RabbitMqConfig;
 import com.xuecheng.manage_cms.dao.CmsConfigDao;
@@ -25,6 +28,7 @@ import freemarker.cache.StringTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -42,12 +46,14 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 
 /**
@@ -57,6 +63,7 @@ import java.util.function.Consumer;
  */
 @Service
 @Transactional(rollbackFor = RuntimeException.class)
+@Slf4j
 public class CmsPageService {
 
     
@@ -132,6 +139,8 @@ public class CmsPageService {
             throw new RuntimeException("数据库已经存在了相同的数据了");
         }
     }
+
+
 
 
     public List<Map<String,Object>> siteList() {
@@ -338,11 +347,17 @@ public class CmsPageService {
      * @param pageId
      * @return
      */
-    public ResponseResult postPage(String pageId) throws Exception {
-        String pageHtml = getPageHtml(pageId);
-        CmsPage cmsPage = saveFile(pageId, pageHtml);
-        sendPostPage(cmsPage);
-        return ResponseResult.SUCCESS();
+    public ResponseResult postPage(String pageId){
+        try {
+            String pageHtml = getPageHtml(pageId);
+            CmsPage cmsPage = saveFile(pageId, pageHtml);
+            sendPostPage(cmsPage);
+            return ResponseResult.SUCCESS();
+        } catch (Exception e) {
+            log.error(this.getClass().toString(),e);
+            return ResponseResult.FAIL();
+
+        }
     }
 
 
@@ -350,7 +365,7 @@ public class CmsPageService {
      * 往mq中发信息
     * @param cmsPage
      */
-    public void sendPostPage(CmsPage cmsPage) throws JsonProcessingException {
+    public void sendPostPage(CmsPage cmsPage) {
         
         String siteId = cmsPage.getSiteId();
         Map<String, Object> map = new HashMap<>();
@@ -368,6 +383,63 @@ public class CmsPageService {
 
 
         rabbitTemplate.convertAndSend(RabbitMqConfig.EX_ROUTING_CMS_POSTPAGE,siteId,map);
+    }
+
+    /**
+     * 修改
+     * @param cmsPage
+     */
+    public CmsPageResult saveAndUpdate(CmsPage cmsPage) {
+        List<CmsPage> dbCmsPageList = cmsPageDao.findByPageNameAndSiteIdAndPageWebPath(cmsPage.getPageName(), cmsPage.getSiteId(), cmsPage.getPageWebPath());
+        if(CollectionUtils.isEmpty(dbCmsPageList)){
+            cmsPageDao.save(cmsPage);
+        }else{
+            CmsPage dbCmsPage = dbCmsPageList.get(0);
+            cmsPage.setPageId(dbCmsPage.getPageId());
+            cmsPageDao.save(cmsPage);
+
+        }
+        return new CmsPageResult(CommonCode.SUCCESS,cmsPage);
+
+    }
+
+
+    /**
+     * 一键发布
+     * @param cmsPage
+     * @return
+     */
+    public CmsPostPageResult postPageQuick(CmsPage cmsPage)  {
+
+        CmsPageResult cmsPageResult = this.saveAndUpdate(cmsPage);
+        if(!cmsPageResult.isSuccess()){
+            return new CmsPostPageResult(CommonCode.FAIL,null);
+        }
+
+        ResponseResult responseResult = this.postPage(cmsPage.getPageId());
+        if(!responseResult.isSuccess()){
+            return new CmsPostPageResult(CommonCode.FAIL,null);
+        }
+
+        Optional<CmsSite> siteOpt = cmsSiteDao.findById(cmsPage.getSiteId());
+        if(!siteOpt.isPresent()){
+            return new CmsPostPageResult(CommonCode.FAIL,null);
+        }
+
+        String pageUrl = "";
+
+        String siteDomain = siteOpt.get().getSiteDomain();
+        String siteWebPath = siteOpt.get().getSiteWebPath();
+        String pageWebPath = cmsPage.getPageWebPath();
+        pageUrl = siteDomain+siteWebPath+pageWebPath+cmsPage.getPageHtml();
+
+
+
+        return new CmsPostPageResult(CommonCode.SUCCESS,pageUrl);
+
+
+
+
     }
 
 

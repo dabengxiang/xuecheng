@@ -2,16 +2,16 @@ package com.xuecheng.api.cms;
 
 import com.xuecheng.framework.domain.course.CourseBase;
 import com.xuecheng.framework.domain.course.CourseMarket;
+import com.xuecheng.framework.domain.course.CoursePic;
 import com.xuecheng.framework.domain.course.Teachplan;
-import com.xuecheng.framework.domain.course.ext.CourseInfo;
+import com.xuecheng.framework.domain.course.ext.CourseView;
 import com.xuecheng.framework.domain.course.ext.TeachplanNode;
 import com.xuecheng.framework.domain.course.request.CourseListRequest;
+import com.xuecheng.framework.model.response.CmsPostPageResult;
+import com.xuecheng.framework.model.response.CoursePublishResult;
 import com.xuecheng.framework.model.response.QueryResponseResult;
 import com.xuecheng.framework.model.response.ResponseResult;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * Date:2019/1/6
@@ -39,5 +39,28 @@ public interface CourseControllerApi {
 
     @ApiOperation("更新课程营销")
     public ResponseResult updateCourseMarket(CourseMarket courseMarket );
+
+
+    @ApiOperation("为课程添加图片")
+    public ResponseResult coursepicAdd(String courseId,String pic) ;
+
+
+    @ApiOperation("查询课程图片")
+    public CoursePic coursepicList( String courseId) ;
+
+    @ApiOperation("删除课程图片")
+    public ResponseResult coursepicDelete( String courseId);
+
+
+    @ApiOperation("课程试图")
+    public CourseView courseView(String id);
+
+    @ApiOperation("页面预览")
+    public CoursePublishResult preview(String id);
+
+   @ApiOperation("页面发布")
+   public CoursePublishResult publish(String id);
+
+
 
  }

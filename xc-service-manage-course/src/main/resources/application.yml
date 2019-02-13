@@ -22,7 +22,24 @@ logging:
     com.xuecheng.manage_course.dao: debug
 pagehelper:
   helper-dialect: mysql
-    
+eureka:
+  instance:
+    prefer-ip-address: true
+    ip-address: ${IP_ADDRESS:127.0.0.1}
+    instance-id: ${spring.application.name}:${server.port}
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+
+
+course-publish:
+  siteId: 5a751fab6abb5044e0d19ea1
+  templateId: 5aec5dd70e661808240ab7a6
+  previewUrl: http://www.xuecheng.com/cms/preview/
+  pageWebPath: /course/detail/
+  pagePhysicalPath: /course/detail/
+  dataUrlPre: http://localhost:31200/course/courseview/
 
 
 

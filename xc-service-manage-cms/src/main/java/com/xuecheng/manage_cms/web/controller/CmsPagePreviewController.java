@@ -28,6 +28,7 @@ public class CmsPagePreviewController {
     @RequestMapping(value="/cms/preview/{pageId}",method = RequestMethod.GET)
     public void previewPage(@PathVariable("pageId") String pageId, HttpServletResponse response) throws Exception {
             String content = cmsPageService.getPageHtml(pageId);
+            response.setHeader("Content-type","text/html;charset=utf-8");
             ServletOutputStream outputStream = response.getOutputStream();
             //outputStream.write("outputStream".getBytes());
             outputStream.write(content.getBytes("utf-8"));

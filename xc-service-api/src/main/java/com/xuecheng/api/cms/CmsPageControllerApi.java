@@ -2,13 +2,12 @@ package com.xuecheng.api.cms;
 
 import com.xuecheng.framework.domain.cms.CmsPage;
 import com.xuecheng.framework.domain.cms.request.QueryPageRequest;
-import com.xuecheng.framework.model.response.CommonCode;
-import com.xuecheng.framework.model.response.QueryResponseResult;
-import com.xuecheng.framework.model.response.QueryResult;
-import com.xuecheng.framework.model.response.ResponseResult;
+import com.xuecheng.framework.model.response.*;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -40,5 +39,11 @@ public interface CmsPageControllerApi {
 
 
     public ResponseResult postPage(String pageId) throws Exception;
+
+    public ResponseResult saveAndUpdate( CmsPage cmsPage) ;
+
+
+    @ApiOperation("一键发布")
+    public CmsPostPageResult postPageQuick(CmsPage cmsPage);
 
 }

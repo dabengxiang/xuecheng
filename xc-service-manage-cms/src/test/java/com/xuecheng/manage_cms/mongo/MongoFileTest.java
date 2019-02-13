@@ -37,8 +37,8 @@ public class MongoFileTest  extends ManageCmsApplicaitonTest{
 
     @Test
     public void saveFile() throws FileNotFoundException {
-        FileInputStream inputStream = new FileInputStream("E:\\work\\idea_workspace\\xuecheng\\xc-service-manage-cms\\src\\main\\resources\\index_banner.ftl");
-        ObjectId id = gridFsTemplate.store(inputStream, "轮播图测试文件1");
+        FileInputStream inputStream = new FileInputStream("E:\\黑马在线视频资料\\学成在线\\9. 课程预览 Eureka Feign\\资料\\课程详情页面模板\\course.ftl");
+        ObjectId id = gridFsTemplate.store(inputStream, "课程详情模板文件");
         System.out.println(id.toString());
     }
 
