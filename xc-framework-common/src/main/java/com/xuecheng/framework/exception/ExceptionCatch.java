@@ -32,7 +32,7 @@ public class ExceptionCatch {
     @ResponseBody
     @ExceptionHandler(CustomerException.class)
     public ResponseResult customerException(CustomerException customerException){
-        LOGGER.error("catch exception :{}" ,customerException.getMessage());
+        LOGGER.error("catch exception :{}" ,customerException);
         return new ResponseResult(customerException.getResultCode());
     }
 
@@ -42,7 +42,7 @@ public class ExceptionCatch {
     @ResponseBody
     public ResponseResult exception(Exception exception){
         //记录日志
-        LOGGER.error("catch exception:{}",exception.getMessage());
+        LOGGER.error("catch exception:{}",exception);
         if(EXCEPTIONS == null){
             EXCEPTIONS = builder.build();//EXCEPTIONS构建成功
         }

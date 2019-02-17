@@ -49,6 +49,7 @@ public class ConsumerPostPage {
 
         String pageId = (String) map.get("pageId");
         pageService.savePageToServerPath(pageId);
+        channel.basicAck((Long) headers.get(AmqpHeaders.DELIVERY_TAG),false);
     }
 
 
